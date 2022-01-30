@@ -33,11 +33,14 @@ public class TaskManager : MonoBehaviour
 
     public float lastTaskNotificationTime = 10;
     // Update is called once per frame
+    string extraText = "";
     void Update()
     {
         taskInformationText.text = "Tonight's Tasks:\n";
         if (partyHatCount > 0)
             taskInformationText.text += "Place party hats in dining room (" + partyHatsPlaced + "/" + partyHatCount + ")";
+        taskInformationText.text += "\nMore tasks! Wowww!!!\nSuch a cool thing"+ extraText;
+        extraText += "!";
         Vector2 panelSize = Vector2.zero;
         panelSize.x = taskInformationText.GetComponent<RectTransform>().sizeDelta.x + 20;
         panelSize.y = taskInformationText.GetComponent<RectTransform>().sizeDelta.y + 20;

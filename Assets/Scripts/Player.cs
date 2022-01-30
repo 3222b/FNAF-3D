@@ -202,6 +202,7 @@ public class Player : MonoBehaviour
 
         if (flashlight.GetComponent<Light>().intensity > 0)
         {
+            flashlight.GetChild(0).gameObject.SetActive(true);
             if (flashlightPower.flashlightPower > 0)
                 flashlightPower.flashlightPower -= Time.deltaTime;
             if (flashlightPower.flashlightPower <= 0)
@@ -210,6 +211,10 @@ public class Player : MonoBehaviour
                 flashlight.GetComponent<AudioSource>().Play();
                 flashlightPower.flashlightPower = 0;
             }
+        }
+        else
+        {
+            flashlight.GetChild(0).gameObject.SetActive(false);
         }
         if (Input.GetMouseButtonDown(1))
         {

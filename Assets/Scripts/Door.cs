@@ -40,7 +40,7 @@ public class Door : MonoBehaviour
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (power.powerLeft > 0)
             {
-                if (Physics.Raycast(ray, out rayHit, 50.0f))
+                if (Physics.Raycast(ray, out rayHit, 2.0f))
                 {
                     if (Input.GetMouseButtonDown(0))
                     {

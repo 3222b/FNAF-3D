@@ -10,27 +10,49 @@ public class EnemyAI : MonoBehaviour
     public bool active = false;
     public Player target;
 
-    public double activeTime = 0.5;
+    public float targetRange = 5f;
+    public int firstActiveNight = 1;
+    public double activeTime = 0.5f;
 
-    public Transform targetEyes;
-    public NavMeshAgent agent;
     public Transform jumpscareCameraPosition;
     public Animator animator;
-    public AudioSource walkAudioSource;
-    public AudioSource jumpscareAudioSource;
     public Light jumpscareLight;
-    public float patrolSpeed = 0.675f;
-    public float chaseSpeed = 1.25f;
+    public AudioClip jumpScareSound;
     public Transform[] patrolPositions;
     public AudioClip[] walkSounds;
+    public float patrolSpeed = 0.675f;
+    public float chaseSpeed = 1.25f;
 
+    private NavMeshAgent agent;
     private bool killedPlayer;
     private int patrolDestination;
     private float killTimer;
 
-    // Start is called before the first frame update
-    void Start() => NewPatrolDestination();
+    private AudioSource walkAudioSource;
+    private AudioSource jumpscareAudioSource;
+
     void NewPatrolDestination() => patrolDestination = Random.Range(0, patrolPositions.Length);
+
+    void Start()
+    {
+        // Add Components
+        agent = gameObject.AddComponent<NavMeshAgent>();
+        agent.angularSpeed = 0f;
+        agent.radius = 2f;
+        agent.height = 4.8f;
+
+        walkAudioSource = gameObject.AddComponent<AudioSource>();
+        walkAudioSource.volume = 0.2f;
+        walkAudioSource.spatialBlend = 1f;
+        walkAudioSource.minDistance = 1f;
+        walkAudioSource.maxDistance = 7f;
+
+        jumpscareAudioSource = gameObject.AddComponent<AudioSource>();
+        jumpscareAudioSource.clip = jumpScareSound;
+
+        // Set initial patrol destination
+        NewPatrolDestination();
+    }
 
     void KillPlayer()
     {
@@ -43,7 +65,6 @@ public class EnemyAI : MonoBehaviour
         jumpscareLight.enabled = true;
     }
 
-    // Update is called once per frame
     private bool inPlayerBounds = false;
     private bool followingPlayer = false;
     private float walkSoundTimer;
@@ -88,10 +109,16 @@ public class EnemyAI : MonoBehaviour
             Vector3 dirToTarget = (target.transform.position - transform.position).normalized;
             float distanceToTarget = Vector3.Distance(transform.position, target.transform.position);
 
-            if (Vector3.Distance(target.transform.position, transform.position) < 5f)
+            var lineOfSight = transform.position;
+            var targetLineOfSight = target.transform.position;
+            targetLineOfSight.y += 0.675f;
+            lineOfSight.y += 0.675f;
+            Debug.DrawRay(lineOfSight, targetLineOfSight - lineOfSight, Color.white);
+            if (Vector3.Distance(target.transform.position, transform.position) < targetRange)
             {
-                Debug.DrawRay(transform.position, dirToTarget);
-                if (!Physics.Raycast(transform.position, dirToTarget, distanceToTarget))
+                RaycastHit raycastHit;
+                Physics.Raycast(lineOfSight, targetLineOfSight - lineOfSight, out raycastHit, targetRange+1);
+                if (raycastHit.transform.tag == "Player")
                 {
                     followingPlayer = true;
                     inPlayerBounds = true;
@@ -107,7 +134,6 @@ public class EnemyAI : MonoBehaviour
                 followingPlayer = false;
                 if (inPlayerBounds)
                 {
-                    Debug.Log("LEFT BOUNDS");
                     inPlayerBounds = false;
                     NewPatrolDestination();
                 }

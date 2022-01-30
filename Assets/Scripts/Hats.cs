@@ -34,7 +34,6 @@ public class Hats : MonoBehaviour
         RaycastHit[] rayHits;
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         rayHits = Physics.RaycastAll(ray, 1f);
-        Debug.DrawRay(transform.position, Camera.main.ScreenToWorldPoint(Input.mousePosition));
         bool hitRay = false;
         foreach (var rayHit in rayHits)
         {
